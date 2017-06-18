@@ -5,7 +5,7 @@ namespace Scorpion\Cbr;
 use Illuminate\Support\Arr;
 use Illuminate\Contracts\Cache\Factory as FactoryContract;
 
-class Currency
+class Cbr
 {
     /**
      * Currency configuration.

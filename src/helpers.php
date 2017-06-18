@@ -14,10 +14,10 @@ if (!function_exists('currency')) {
     function currency($amount = null, $from = null, $to = null, $format = true)
     {
         if (is_null($amount)) {
-            return app('currency');
+            return app('cbr');
         }
 
-        return app('currency')->convert($amount, $from, $to, $format);
+        return app('cbr')->convert($amount, $from, $to, $format);
     }
 }
 
@@ -33,6 +33,6 @@ if (!function_exists('currency_format')) {
      */
     function currency_format($amount = null, $currency = null, $include_symbol = true)
     {
-        return app('currency')->format($amount, $currency, $include_symbol);
+        return app('cbr')->format($amount, $currency, $include_symbol);
     }
 }

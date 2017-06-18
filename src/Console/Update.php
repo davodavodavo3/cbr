@@ -12,9 +12,7 @@ class Update extends Command
      *
      * @var string
      */
-    protected $signature = 'cbr:update
-                                {--o|openexchangerates : Get rates from OpenExchangeRates.org}
-								{--cbr : Get rates from OpenExchangeRates.org}';
+    protected $signature = 'cbr:update';
 
     /**
      * The console command description.
@@ -26,16 +24,16 @@ class Update extends Command
     /**
      * Currency instance
      *
-     * @var \Scorpion\Currency\Currency
+     * @var \Scorpion\Cbr\Currency
      */
-    protected $currency;
+    protected $cbr;
 
     /**
      * Create a new command instance.
      */
     public function __construct()
     {
-        $this->currency = app('currency');
+        $this->cbr = app('cbr');
 
         parent::__construct();
     }
@@ -48,96 +46,14 @@ class Update extends Command
     public function fire()
     {
         // Get Settings
-        $defaultCurrency = $this->currency->config('default');
+        $defaultCurrency = $this->cbr->config('default');
 
-        if ($this->input->getOption('openexchangerates')) {
-            if (!$api = $this->currency->config('api_key')) {
-                $this->error('An API key is needed from OpenExchangeRates.org to continue.');
+        $this->updateFromCBR($defaultCurrency);
 
-                return;
-            }
-
-            // Get rates
-            $this->updateFromOpenExchangeRates($defaultCurrency, $api);
-        } elseif ($this->input->getOption('cbr')) {
-            // Get rates of CBR
-            $this->updateFromCBRRates($defaultCurrency);
-        } elseif ($this->input->getOption('nbrb')) {
-            // Get rates of NBRB
-            $this->updateFromNBRBRates($defaultCurrency);
-        } else {
-            // Get rates
-            $this->updateFromYahoo($defaultCurrency);
-        }
     }
 
-    private function updateFromYahoo($defaultCurrency)
-    {
-        $this->comment('Updating currency exchange rates from Finance Yahoo...');
 
-        $data = [];
-
-        // Get all currencies
-        foreach ($this->currency->getDriver()->all() as $code => $value) {
-            $data[] = "{$defaultCurrency}{$code}=X";
-        }
-
-        // Ask Yahoo for exchange rate
-        if ($data) {
-            $content = $this->request('http://download.finance.yahoo.com/d/quotes.csv?s=' . implode(',', $data) . '&f=sl1&e=.csv');
-
-            $lines = explode("\n", trim($content));
-
-            // Update each rate
-            foreach ($lines as $line) {
-                $code = substr($line, 4, 3);
-                $value = substr($line, 11, 6) * 1.00;
-
-                if ($value) {
-                    $this->currency->getDriver()->update($code, [
-                        'exchange_rate' => $value,
-                    ]);
-                }
-            }
-
-            // Clear old cache
-            $this->call('currency:cleanup');
-        }
-
-        $this->info('Complete');
-    }
-
-    private function updateFromOpenExchangeRates($defaultCurrency, $api)
-    {
-        $this->info('Updating currency exchange rates from OpenExchangeRates.org...');
-
-        // Make request
-        $content = json_decode($this->request("http://openexchangerates.org/api/latest.json?base={$defaultCurrency}&app_id={$api}"));
-
-        // Error getting content?
-        if (isset($content->error)) {
-            $this->error($content->description);
-
-            return;
-        }
-
-        // Parse timestamp for DB
-        $timestamp = new DateTime(strtotime($content->timestamp));
-
-        // Update each rate
-        foreach ($content->rates as $code => $value) {
-            $this->currency->getDriver()->update($code, [
-                'exchange_rate' => $value,
-                'updated_at' => $timestamp,
-            ]);
-        }
-
-        $this->currency->clearCache();
-
-        $this->info('Update!');
-    }
-
-    private function processXml($defaultCurrency, $resource = 'cbr')
+    private function processXml($defaultCurrency)
     {
         $config = $this->app['config']['currency.' . $resource];
         $this->info($config['description']);
@@ -176,19 +92,28 @@ class Update extends Command
         }
     }
 
-    private function updateFromCBRRates($defaultCurrency)
+    private function updateFromCBR($defaultCurrency)
     {
-        $this->processXml($defaultCurrency);
-        Cache::forget('currency');
-        $this->info('Update!');
+        $this->comment('Обновление валютных курсов с Центрального банка ...');
+        $content = $this->request('http://www.cbr.ru/scripts/XML_daily.asp?date_req=' . date('d/m/Y'));
+
+        $currencies = new \SimpleXMLElement($content);
+
+
+        // Update each rate
+        foreach ($currencies as $currency) {
+
+            $this->cbr->getDriver()->update($currency->CharCode, [
+                'exchange_rate' => $currency->Value,
+            ]);
+        }
+
+        //$this->processXml($defaultCurrency);
+
+        $this->call('currency:cleanup');
+        $this->info('Курс валют обновлен!');
     }
 
-    private function updateFromNBRBRates($defaultCurrency)
-    {
-        $this->processXml($defaultCurrency, 'nbrb');
-        Cache::forget('currency');
-        $this->info('Update!');
-    }
 
     private function request($url)
     {
