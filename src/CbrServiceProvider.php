@@ -4,7 +4,7 @@ namespace Scorpion\Cbr;
 
 use Illuminate\Support\ServiceProvider;
 
-class CurrencyServiceProvider extends ServiceProvider
+class CbrServiceProvider extends ServiceProvider
 {
     /**
      * Register the service provider.
