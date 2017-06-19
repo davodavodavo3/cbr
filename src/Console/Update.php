@@ -68,7 +68,7 @@ class Update extends Command
             ]);
         }
 
-        $this->call('currency:cleanup');
+        $this->call('cbr:cleanup');
         $this->info('Курс валют обновлен!');
     }
 
