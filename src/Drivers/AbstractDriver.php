@@ -1,9 +1,9 @@
 <?php
 
-namespace Scorpion\Currency\Drivers;
+namespace Scorpion\Cbr\Drivers;
 
 use Illuminate\Support\Arr;
-use Scorpion\Currency\Contracts\DriverInterface;
+use Scorpion\Cbr\Contracts\DriverInterface;
 
 abstract class AbstractDriver implements DriverInterface
 {

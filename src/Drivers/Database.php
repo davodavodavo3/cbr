@@ -1,6 +1,6 @@
 <?php
 
-namespace Scorpion\Currency\Drivers;
+namespace Scorpion\Cbr\Drivers;
 
 use DateTime;
 use Illuminate\Support\Collection;

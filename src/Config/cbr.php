@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'default' => 'USD',
+    'default' => 'RUB',
 
     /*
     |--------------------------------------------------------------------------
@@ -55,13 +55,13 @@ return [
     'drivers' => [
 
         'database' => [
-            'class' => \Scorpion\Currency\Drivers\Database::class,
+            'class' => \Scorpion\Cbr\Drivers\Database::class,
             'connection' => null,
             'table' => 'currencies',
         ],
 
         'filesystem' => [
-            'class' => \Scorpion\Currency\Drivers\Filesystem::class,
+            'class' => \Scorpion\Cbr\Drivers\Filesystem::class,
             'disk' => null,
             'path' => 'currencies.json',
         ],
@@ -97,7 +97,7 @@ return [
     'formatters' => [
 
         'php_intl' => [
-            'class' => \Scorpion\Currency\Formatters\PHPIntl::class,
+            'class' => \Scorpion\Cbr\Formatters\PHPIntl::class,
         ],
 
     ],
