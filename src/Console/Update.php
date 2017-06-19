@@ -52,46 +52,6 @@ class Update extends Command
 
     }
 
-
-    private function processXml($defaultCurrency)
-    {
-        $config = $this->app['config']['currency.' . $resource];
-        $this->info($config['description']);
-        $xml = $this->request($config['url'] . date($config['date_format']));
-        $currencyRates = new \SimpleXMLElement($xml);
-        $default = 1;
-        $rates = array();
-        $needed = $this->app['config']['currency.needed'];
-        foreach ($currencyRates->$config['currency'] as $data) {
-            if (in_array($data->CharCode, $needed)) {
-                if ($data->CharCode == $defaultCurrency) {
-                    $default = str_replace(",", ".", $data->$config['value']) / (float)$data->$config['nominal'];
-                    $rates[] = array(
-                        'code' => $defaultCurrency,
-                        'value' => 1
-                    );
-                } else {
-                    $rates[] = array(
-                        'code' => $data->CharCode,
-                        'value' => (str_replace(",", ".", $data->$config['value']) / (float)$data->$config['nominal'])
-                    );
-                }
-            }
-        }
-        $rates[] = array(
-            'code' => $config['code'],
-            'value' => $default
-        );
-        foreach ($rates as $rate) {
-            $this->app['db']->table($this->table_name)
-                ->where('code', $rate['code'])
-                ->update([
-                    'value' => in_array($rate['code'], [$config['code'], $defaultCurrency]) ? $rate['value'] : $default / $rate['value'],
-                    'updated_at' => new DateTime('now')
-                ]);
-        }
-    }
-
     private function updateFromCBR($defaultCurrency)
     {
         $this->comment('Обновление валютных курсов с Центрального банка ...');
@@ -107,8 +67,6 @@ class Update extends Command
                 'exchange_rate' => $currency->Value,
             ]);
         }
-
-        //$this->processXml($defaultCurrency);
 
         $this->call('currency:cleanup');
         $this->info('Курс валют обновлен!');

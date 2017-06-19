@@ -3,16 +3,16 @@
 namespace Scorpion\Cbr\Console;
 
 use Illuminate\Support\Arr;
-use Scorpion\Cbr\Currency;
+use Scorpion\Cbr\Cbr;
 use Illuminate\Console\Command;
 
 class Manage extends Command
 {
     /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
+ * The name and signature of the console command.
+ *
+ * @var string
+ */
     protected $signature = 'cbr:manage
                                 {action : Action to perform (add, update, or delete)}
                                 {currency : Code or comma separated list of codes for currencies}';
@@ -27,7 +27,7 @@ class Manage extends Command
     /**
      * Currency storage instance
      *
-     * @var \Scorpion\Currency\Contracts\DriverInterface
+     * @var \Scorpion\Cbr\Contracts\DriverInterface
      */
     protected $storage;
 
@@ -43,7 +43,7 @@ class Manage extends Command
      */
     public function __construct()
     {
-        $this->storage = app('currency')->getDriver();
+        $this->storage = app('cbr')->getDriver();
         $this->currencies = include(__DIR__ . '/../Resources/currencies.php');
 
         parent::__construct();
