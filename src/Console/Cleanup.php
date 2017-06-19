@@ -21,11 +21,11 @@ class Cleanup extends Command
     protected $description = 'Очистка кэша валют';
 
     /**
-     * Currency instance
+     * Cbr instance
      *
      * @var \Scorpion\Cbr\Currency
      */
-    protected $currency;
+    protected $cbr;
 
     /**
      * Create a new command instance.
@@ -34,7 +34,7 @@ class Cleanup extends Command
     {
         parent::__construct();
 
-        $this->currency = app('currency');
+        $this->cbr = app('cbr');
     }
 
     /**
@@ -45,11 +45,11 @@ class Cleanup extends Command
     public function fire()
     {
         // Clear cache
-        $this->currency->clearCache();
+        $this->cbr->clearCache();
         $this->comment('Очистка кэша выполнена.');
 
         // Force the system to rebuild cache
-        $this->currency->getCurrencies();
+        $this->cbr->getCurrencies();
         $this->comment('Обновления кэша валют выполнена.');
     }
 }

@@ -9,7 +9,7 @@ if (!function_exists('currency')) {
      * @param string $to
      * @param bool   $format
      *
-     * @return \Scorpion\Currency\Currency|string
+     * @return \Scorpion\Cbr\Currency|string
      */
     function currency($amount = null, $from = null, $to = null, $format = true)
     {
