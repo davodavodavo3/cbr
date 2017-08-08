@@ -12,7 +12,8 @@ class Update extends Command
      *
      * @var string
      */
-    protected $signature = 'cbr:update';
+    protected $signature = 'cbr:update
+									{--o|yahoo : Get rates from OpenExchangeRates.org}';
 
     /**
      * The console command description.
@@ -48,26 +49,63 @@ class Update extends Command
         // Get Settings
         $defaultCurrency = $this->cbr->config('default');
 
-        $this->updateFromCBR($defaultCurrency);
-
+		if ($this->input->getOption('yahoo')) {
+			// Get rates
+            $this->updateFromYahoo($defaultCurrency);
+        }
+        else {
+            // Get rates
+			$this->updateFromCBR($defaultCurrency);
+        }
     }
 
+	private function updateFromYahoo($defaultCurrency)
+    {
+        $this->comment('Обновление валютных курсов с Finance Yahoo...');
+        $data = [];
+        // Get all currencies
+        foreach ($this->cbr->getDriver()->all() as $code => $value) {
+            $data[] = "{$defaultCurrency}{$code}=X";
+        }
+        // Ask Yahoo for exchange rate
+        if ($data) {
+            $content = $this->request('http://download.finance.yahoo.com/d/quotes.csv?s=' . implode(',', $data) . '&f=sl1&e=.csv');
+            $lines = explode("\n", trim($content));
+            // Update each rate
+            foreach ($lines as $line) {
+                $code = substr($line, 4, 3);
+                $value = substr($line, 11, 6) * 1.00;
+                if ($value) {
+                    $this->cbr->getDriver()->update($code, [
+                        'exchange_rate' => $value,
+                    ]);
+                }
+            }
+            // Clear old cache
+            $this->call('cbr:cleanup');
+        }
+        $this->info('Курс валют обновлен!');
+    }
+	
     private function updateFromCBR($defaultCurrency)
     {
         $this->comment('Обновление валютных курсов с Центрального банка ...');
-        $content = $this->request('http://www.cbr.ru/scripts/XML_daily.asp?date_req=' . date('d/m/Y'));
+        $content = $this->request('http://www.cbr.ru/scripts/XML_daily.asp');
 
         $currencies = new \SimpleXMLElement($content);
 
 
         // Update each rate
         foreach ($currencies as $currency) {
-
-            $this->cbr->getDriver()->update($currency->CharCode, [
-                'exchange_rate' => $currency->Value,
-            ]);
+			$this->cbr->getDriver()->update($currency->CharCode, [
+				'exchange_rate' => $currency->Value,
+			]);
         }
 
+		$this->cbr->getDriver()->update('RUB', [
+			'exchange_rate' => 1,
+		]);
+		
         $this->call('cbr:cleanup');
         $this->info('Курс валют обновлен!');
     }
