@@ -98,7 +98,7 @@ class Update extends Command
         // Update each rate
         foreach ($currencies as $currency) {
 			$this->cbr->getDriver()->update($currency->CharCode, [
-				'exchange_rate' => $currency->Value,
+				'exchange_rate' => str_replace(',', '.', $currency->Value),
 			]);
         }
 
