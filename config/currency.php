@@ -67,13 +67,13 @@ return [
     'drivers' => [
 
         'database' => [
-            'class' => \Scorpion\Cbr\Drivers\Database::class,
+            'class' => \Scorpion\Currency\Drivers\Database::class,
             'connection' => null,
             'table' => 'currencies',
         ],
 
         'filesystem' => [
-            'class' => \Scorpion\Cbr\Drivers\Filesystem::class,
+            'class' => \Scorpion\Currency\Drivers\Filesystem::class,
             'disk' => null,
             'path' => 'currencies.json',
         ],
@@ -109,7 +109,7 @@ return [
     'formatters' => [
 
         'php_intl' => [
-            'class' => \Scorpion\Cbr\Formatters\PHPIntl::class,
+            'class' => \Scorpion\Currency\Formatters\PHPIntl::class,
         ],
 
     ],
