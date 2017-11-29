@@ -1,6 +1,6 @@
 <?php
 
-namespace Scorpion\Cbr\Drivers;
+namespace Scorpion\Currency\Drivers;
 
 use DateTime;
 use Exception;

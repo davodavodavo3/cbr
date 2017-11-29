@@ -1,6 +1,6 @@
 <?php
 
-namespace Scorpion\Cbr\Console;
+namespace Scorpion\Currency\Console;
 
 use Illuminate\Console\Command;
 
@@ -11,7 +11,7 @@ class Cleanup extends Command
      *
      * @var string
      */
-    protected $signature = 'cbr:cleanup';
+    protected $signature = 'currency:cleanup';
 
     /**
      * The console command description.
@@ -21,35 +21,45 @@ class Cleanup extends Command
     protected $description = 'Очистка кэша валют';
 
     /**
-     * Cbr instance
+     * Currency instance
      *
-     * @var \Scorpion\Cbr\Currency
+     * @var \Scorpion\Currency\Currency
      */
-    protected $cbr;
+    protected $currency;
 
     /**
      * Create a new command instance.
      */
     public function __construct()
     {
+		$this->currency = app('currency');
+		
         parent::__construct();
-
-        $this->cbr = app('cbr');
     }
 
     /**
-     * Execute the console command.
+     * Execute the console command for Laravel 5.4 and below
      *
      * @return void
      */
     public function fire()
     {
+		$this->handle();
+    }
+	
+	/**
+     * Execute the console command.
+     *
+     * @return void
+     */
+    public function handle()
+    {
         // Clear cache
-        $this->cbr->clearCache();
+        $this->currency->clearCache();
         $this->comment('Очистка кэша выполнена.');
 
         // Force the system to rebuild cache
-        $this->cbr->getCurrencies();
+        $this->currency->getCurrencies();
         $this->comment('Обновления кэша валют выполнена.');
     }
 }

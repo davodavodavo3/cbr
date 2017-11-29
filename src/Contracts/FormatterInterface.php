@@ -1,6 +1,6 @@
 <?php
 
-namespace Scorpion\Cbr\Contracts;
+namespace Scorpion\Currency\Contracts;
 
 interface FormatterInterface
 {

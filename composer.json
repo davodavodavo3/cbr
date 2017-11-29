@@ -1,5 +1,5 @@
 {
-    "name": "davodavodavo3/cbr",
+    "name": "davodavodavo3/currency",
     "description": "This provides Laravel 5 with currency functions such as currency formatting and conversion using up-to-date exchange rates.",
     "keywords": [
 		"laravel",
@@ -26,7 +26,7 @@
             "src/helpers.php"
         ],
         "psr-4": {
-            "Scorpion\\Cbr\\": "src/"
+            "Scorpion\\Currency\\": "src/"
         }
     },
     "minimum-stability": "dev"

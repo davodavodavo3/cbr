@@ -1,9 +1,9 @@
 <?php
 
-namespace Scorpion\Cbr\Formatters;
+namespace Scorpion\Currency\Formatters;
 
 use NumberFormatter;
-use Scorpion\Cbr\Contracts\FormatterInterface;
+use Scorpion\Currency\Contracts\FormatterInterface;
 
 class PHPIntl implements FormatterInterface
 {

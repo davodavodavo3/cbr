@@ -1,10 +1,10 @@
 <?php
 
-namespace Scorpion\Cbr\Facades;
+namespace Scorpion\Currency\Facades;
 
 use Illuminate\Support\Facades\Facade;
 
-class Cbr extends Facade
+class Currency extends Facade
 {
     /**
      * Get the registered name of the component.
@@ -13,6 +13,6 @@ class Cbr extends Facade
      */
     protected static function getFacadeAccessor()
     {
-        return 'cbr';
+        return 'currency';
     }
 }

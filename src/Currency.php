@@ -1,11 +1,11 @@
 <?php
 
-namespace Scorpion\Cbr;
+namespace Scorpion\Currency;
 
 use Illuminate\Support\Arr;
 use Illuminate\Contracts\Cache\Factory as FactoryContract;
 
-class Cbr
+class Currency
 {
     /**
      * Currency configuration.
@@ -87,7 +87,12 @@ class Cbr
         }
 
         // Convert amount
-        $value = $amount * $to_rate * (1 / $from_rate);
+        if ($from === $to) {
+            $value = $amount;
+        }
+        else {
+            $value = ($amount * $to_rate) / $from_rate;
+        }
 
         // Should the result be formatted?
         if ($format === true) {
@@ -233,7 +238,7 @@ class Cbr
                 $this->currencies_cache = $this->getDriver()->all();
             }
             else {
-                $this->currencies_cache = $this->cache->rememberForever('scorpion.cbr', function () {
+                $this->currencies_cache = $this->cache->rememberForever('scorpion.currency', function () {
                     return $this->getDriver()->all();
                 });
             }
@@ -257,7 +262,7 @@ class Cbr
     /**
      * Get storage driver.
      *
-     * @return \Scorpion\cbr\Contracts\DriverInterface
+     * @return \Scorpion\Currency\Contracts\DriverInterface
      */
     public function getDriver()
     {
@@ -278,7 +283,7 @@ class Cbr
     /**
      * Get formatter driver.
      *
-     * @return \Scorpion\Cbr\Contracts\FormatterInterface
+     * @return \Scorpion\Currency\Contracts\FormatterInterface
      */
     public function getFormatter()
     {
@@ -301,7 +306,7 @@ class Cbr
      */
     public function clearCache()
     {
-        $this->cache->forget('scorpion.cbr');
+        $this->cache->forget('scorpion.currency');
     }
 
     /**

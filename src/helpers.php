@@ -9,15 +9,15 @@ if (!function_exists('currency')) {
      * @param string $to
      * @param bool   $format
      *
-     * @return \Scorpion\Cbr\Currency|string
+     * @return \Scorpion\Currency\Currency|string
      */
     function currency($amount = null, $from = null, $to = null, $format = true)
     {
         if (is_null($amount)) {
-            return app('cbr');
+            return app('currency');
         }
 
-        return app('cbr')->convert($amount, $from, $to, $format);
+        return app('currency')->convert($amount, $from, $to, $format);
     }
 }
 
@@ -33,6 +33,6 @@ if (!function_exists('currency_format')) {
      */
     function currency_format($amount = null, $currency = null, $include_symbol = true)
     {
-        return app('cbr')->format($amount, $currency, $include_symbol);
+        return app('currency')->format($amount, $currency, $include_symbol);
     }
 }
